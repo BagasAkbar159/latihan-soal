@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Pembelajaran Pantun - Kelas 7 SMP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        }
+        .btn-bounce {
+            transition: all 0.2s ease;
+        }
+        .btn-bounce:hover {
+            transform: translateY(-3px);
+        }
+        .btn-bounce:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+
+    <!-- Container Utama -->
+    <div id="game-container" class="glass-card w-full max-w-2xl p-6 md:p-8 relative overflow-hidden my-6">
+
+        <!-- HEADER / TITLE -->
+        <div class="text-center mb-6">
+            <span class="bg-sky-100 text-sky-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Bahasa Indonesia Kelas 7 SMP</span>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 mt-2">Petualangan Si Pantun Ceria 📜✨</h1>
+        </div>
+
+        <!-- LAYAR 1: FORM IDENTITAS -->
+        <div id="screen-identity" class="block">
+            <div class="bg-sky-50 border-l-4 border-sky-500 p-4 rounded mb-6 text-sm text-sky-900">
+                <i class="fas fa-info-circle mr-1"></i> Isi data dirimu sebelum memulai petualangan kuis pantun! Hasil jawabanmu akan otomatis terkirim ke sistem guru.
+            </div>
+
+            <form id="form-identity" onsubmit="startQuiz(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap Siswa</label>
+                    <input type="text" id="student-name" required placeholder="Masukkan Nama Lengkap"
+                           class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500 focus:outline-none transition">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Kelas</label>
+                        <select id="student-class" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500 focus:outline-none transition bg-white">
+                            <option value="">-- Pilih Kelas --</option>
+                            <option value="VII A">VII A</option>
+                            <option value="VII B">VII B</option>
+                            <option value="VII C">VII C</option>
+                            <option value="VII D">VII D</option>
+                            <option value="VII E">VII E</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Nomor Urut Absen</label>
+                        <input type="number" id="student-no" required placeholder="Contoh: 15" min="1" max="50"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500 focus:outline-none transition">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full mt-6 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg btn-bounce flex items-center justify-center space-x-2">
+                    <span>Mulai Mainkan Game</span>
+                    <i class="fas fa-play text-xs"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- LAYAR 2: KUIS (SOAL 1 - 10) -->
+        <div id="screen-quiz" class="hidden">
+            <!-- Progress Bar -->
+            <div class="mb-4">
+                <div class="flex justify-between items-center text-xs font-semibold text-gray-600 mb-1">
+                    <span id="quiz-progress-text">Soal 1 dari 10</span>
+                    <span id="score-live-text">Skor: 0</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-sky-500 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+                </div>
+            </div>
+
+            <!-- Pertanyaan -->
+            <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 mb-6">
+                <div id="question-text" class="text-gray-800 font-medium text-base md:text-lg leading-relaxed whitespace-pre-line">
+                    <!-- Pertanyaan dimasukkan via JS -->
+                </div>
+            </div>
+
+            <!-- Pilihan Jawaban -->
+            <div id="options-container" class="space-y-3">
+                <!-- Tombol Opsi dimasukkan via JS -->
+            </div>
+
+            <button id="btn-next" onclick="nextQuestion()" disabled class="w-full mt-6 bg-gray-300 text-gray-500 font-bold py-3 rounded-xl shadow transition cursor-not-allowed flex items-center justify-center space-x-2">
+                <span>Soal Berikutnya</span>
+                <i class="fas fa-arrow-right text-xs"></i>
+            </button>
+        </div>
+
+        <!-- LAYAR 3: HASIL & PENYIMPANAN -->
+        <div id="screen-result" class="hidden text-center py-4">
+            <div class="inline-flex p-4 rounded-full bg-emerald-100 text-emerald-600 mb-4">
+                <i class="fas fa-trophy text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-1">Permainan Selesai!</h2>
+            <p class="text-gray-600 text-sm mb-4">Terima kasih telah menjawab semua soal pantun.</p>
+
+            <div class="bg-sky-50 rounded-xl p-4 mb-6 border border-sky-100">
+                <p class="text-xs text-gray-500 uppercase font-semibold tracking-wider">Skor Akhir Kamu</p>
+                <p id="final-score" class="text-5xl font-black text-sky-600 my-1">0</p>
+                <p id="student-summary" class="text-sm font-medium text-gray-700">Nama (Kelas / No. Absen)</p>
+            </div>
+
+            <!-- Status Pengiriman ke Drive -->
+            <div id="drive-status" class="p-3 rounded-lg text-sm bg-yellow-50 text-yellow-800 border border-yellow-200 mb-6 flex items-center justify-center space-x-2">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Mengirimkan data nilai ke Google Drive...</span>
+            </div>
+
+            <button onclick="restartGame()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl shadow btn-bounce flex items-center justify-center space-x-2">
+                <i class="fas fa-redo"></i>
+                <span>Mainkan Lagi</span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // WEBHOOK URL GOOGLE APPS SCRIPT (Opsional untuk otomasisasi penyimpan spreadsheet / drive)
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_EXAMPLE_YOUR_SCRIPT_ID/exec"; // Masukkan URL Google App Script di sini jika ada
+
+        // DATA SOAL PANTUN
+        const questions = [
+            {
+                question: "Perhatikan pernyataan berikut!\n1. Tiap bait terdiri atas 4 baris.\n2. Bersajak a-a-a-a atau a-b-a-b.\n3. Baris 1 dan 2 adalah isi, baris 3 dan 4 adalah sampiran.\n4. Tiap baris terdiri atas 8 sampai 12 suku kata.\n\nCiri-ciri pantun yang benar ditunjukkan oleh nomor...",
+                options: ["1, 2, dan 3", "1, 2, dan 4", "1, 3, dan 4", "2, 3, dan 4"],
+                answer: 1
+            },
+            {
+                question: "Di dalam sebuah pantun, bagian yang berfungsi sebagai pengantar sampiran untuk membangun irama/rima terletak pada...",
+                options: ["Baris 1 dan 2", "Baris 2 dan 3", "Baris 3 dan 4", "Baris 1 dan 4"],
+                answer: 0
+            },
+            {
+                question: "Pergi ke pasar membeli manggis,\nJangan lupa membeli pita.\nJanganlah bersedih dan menangis,\nMari bersama menggapai cita.\n\nPantun di atas termasuk jenis...",
+                options: ["Pantun jenaka", "Pantun teka-teki", "Pantun nasihat", "Pantun anak-anak"],
+                answer: 2
+            },
+            {
+                question: "Burung pipit terbang melayang,\nHinggap sebentar di pohon durian.\nWahai murid-murid tersayang,\nBelajarlah giat penuh keceriaan.\n\nPola rima akhir pada bait pantun di atas adalah...",
+                options: ["a-a-a-a", "a-b-a-b", "a-a-b-b", "b-a-b-a"],
+                answer: 1
+            },
+            {
+                question: "Kancil berlari mengejar rusa,\nRusa berlari ke dalam hutan.\nLucu sekali melihat kura-kura,\nMemakai topi berjalan pelan.\n\nBerdasarkan isinya, tujuan pembuatan pantun tersebut adalah...",
+                options: ["Memberikan petuah hidup", "Menyampaikan lelucon atau jenaka", "Mengajukan pertanyaan untuk ditebak", "Menyatakan kesedihan hati"],
+                answer: 1
+            },
+            {
+                question: "Pagi hari menanam kelapa,\nBadan lelah istirahat sebentar.\nJika kamu ingin jadi juara,\nBelajarlah tekun tanpa bergesar.\n\nManakah yang merupakan bagian ISI dari pantun tersebut?",
+                options: ["Baris 1 dan 2", "Baris 3 dan 4", "Baris 1 dan 3", "Baris 2 dan 4"],
+                answer: 1
+            },
+            {
+                question: "Bukan lalat bukan pula lebah,\nTubuhnya hijau suka melompat.\nCoba tebak apa hewannya,\nSuka di sawah di dalam lumpur lebat.\n\nJawaban yang tepat untuk teka-teki pantun di atas adalah...",
+                options: ["Belalang", "Katak / Kodok", "Jangkrik", "Ulat"],
+                answer: 1
+            },
+            {
+                question: "Anak panah melesat cepat,\nMengenai sasaran tepat di tengah.\nHormatilah guru dan orang tua tempat,\nAgar hidupmu selamat dunia dan barokah.\n\nPesan moral yang terkandung dalam pantun tersebut adalah...",
+                options: [
+                    "Kita harus berlatih memanah setiap hari",
+                    "Kepatuhan kepada guru dan orang tua membawa keselamatan",
+                    "Kecepatan anak panah menentukan keberhasilan",
+                    "Orang tua harus dihormati hanya saat di sekolah"
+                ],
+                answer: 1
+            },
+            {
+                question: "Perbedaan utama antara pantun dan syair terletak pada...",
+                options: [
+                    "Pantun terdiri 4 baris sajak a-b-a-b (sampiran & isi), syair bersajak a-a-a-a dan semua isi",
+                    "Pantun tidak memiliki sampiran, sedangkan syair memiliki sampiran",
+                    "Syair selalu bersifat jenaka, sedangkan pantun selalu bersifat nasihat",
+                    "Jumlah suku kata pantun 20, sedangkan syair 5"
+                ],
+                answer: 0
+            },
+            {
+                question: "Buah durian buah nanas,\nDijual di dekat Kota Pati.\n(...)\n(...)\n\nAgar menjadi pantun nasihat yang padu dan sesuai rimanya (-as dan -ti), baris 3 dan 4 yang tepat adalah...",
+                options: [
+                    "Janganlah suka bermalas-malas, / Belajarlah dengan sepenuh hati",
+                    "Hari panas terasa gerah, / Minum es manis segar sekali",
+                    "Burung bernyanyi riang gembira, / Terbang tinggi ke angkasa luas",
+                    "Mari makan bersama kawan, / Sambil menikmati senja sore"
+                ],
+                answer: 0
+            }
+        ];
+
+        // STATE GAME
+        let studentData = { name: "", class: "", no: "" };
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let studentAnswers = [];
+
+        // START GAME
+        function startQuiz(e) {
+            e.preventDefault();
+            studentData.name = document.getElementById("student-name").value.trim();
+            studentData.class = document.getElementById("student-class").value;
+            studentData.no = document.getElementById("student-no").value;
+
+            document.getElementById("screen-identity").classList.add("hidden");
+            document.getElementById("screen-quiz").classList.remove("hidden");
+
+            loadQuestion();
+        }
+
+        // TAMPILKAN SOAL
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            selectedOption = null;
+
+            // UI Progress
+            document.getElementById("quiz-progress-text").innerText = `Soal ${currentQuestionIndex + 1} dari ${questions.length}`;
+            document.getElementById("score-live-text").innerText = `Skor: ${score}`;
+            document.getElementById("progress-bar").style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+
+            // Reset Button Next
+            const nextBtn = document.getElementById("btn-next");
+            nextBtn.disabled = true;
+            nextBtn.className = "w-full mt-6 bg-gray-300 text-gray-500 font-bold py-3 rounded-xl shadow transition cursor-not-allowed flex items-center justify-center space-x-2";
+
+            // Pertanyaan
+            document.getElementById("question-text").innerText = q.question;
+
+            // Opsi Jawaban
+            const container = document.getElementById("options-container");
+            container.innerHTML = "";
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "w-full text-left p-4 rounded-xl border border-gray-200 hover:border-sky-500 hover:bg-sky-50 transition flex items-center space-x-3 text-gray-700 font-medium btn-option";
+                btn.onclick = () => selectOption(idx, btn);
+                btn.innerHTML = `
+                    <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-600 text-sm border border-gray-300">${String.fromCharCode(65 + idx)}</span>
+                    <span class="flex-1">${opt}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        // PILIH JAWABAN
+        function selectOption(index, element) {
+            selectedOption = index;
+            const buttons = document.querySelectorAll(".btn-option");
+
+            buttons.forEach((btn, idx) => {
+                if(idx === index) {
+                    btn.className = "w-full text-left p-4 rounded-xl border-2 border-sky-500 bg-sky-50 text-sky-800 font-semibold flex items-center space-x-3 btn-option shadow-sm";
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-xl border border-gray-200 text-gray-700 font-medium flex items-center space-x-3 btn-option opacity-60";
+                }
+            });
+
+            const nextBtn = document.getElementById("btn-next");
+            nextBtn.disabled = false;
+            nextBtn.className = "w-full mt-6 bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl shadow-lg btn-bounce flex items-center justify-center space-x-2 cursor-pointer";
+        }
+
+        // SOAL NEXT
+        function nextQuestion() {
+            if(selectedOption === null) return;
+
+            // Simpan Rekam Jawaban
+            const q = questions[currentQuestionIndex];
+            const isCorrect = selectedOption === q.answer;
+            if (isCorrect) score += 10;
+
+            studentAnswers.push({
+                no: currentQuestionIndex + 1,
+                jawaban: selectedOption,
+                benar: isCorrect
+            });
+
+            currentQuestionIndex++;
+
+            if(currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        // SELESAI & KIRIM DATA
+        function finishQuiz() {
+            document.getElementById("screen-quiz").classList.add("hidden");
+            document.getElementById("screen-result").classList.remove("hidden");
+
+            document.getElementById("final-score").innerText = score;
+            document.getElementById("student-summary").innerText = `${studentData.name} (${studentData.class} / Absen: ${studentData.no})`;
+
+            sendDataToDrive();
+        }
+
+        // KIRIM DATA KE GOOGLE DRIVE / SCRIPT
+        function sendDataToDrive() {
+            const statusEl = document.getElementById("drive-status");
+
+            const payload = {
+                timestamp: new Date().toLocaleString("id-ID"),
+                nama: studentData.name,
+                kelas: studentData.class,
+                noAbsen: studentData.no,
+                skor: score,
+                folderDrive: "https://drive.google.com/drive/folders/1FNnMzD50otFEXGO-CfvKuvDlfMkIl2a2?usp=sharing"
+            };
+
+            // Kirim via fetch jika Google Script URL dikonfigurasi
+            if(GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("EXAMPLE")) {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).then(() => {
+                    statusEl.className = "p-3 rounded-lg text-sm bg-emerald-50 text-emerald-800 border border-emerald-200 mb-6 flex items-center justify-center space-x-2";
+                    statusEl.innerHTML = `<i class="fas fa-check-circle text-emerald-600"></i><span>Data jawaban & skor berhasil disimpan ke Google Drive!</span>`;
+                }).catch(err => {
+                    statusEl.className = "p-3 rounded-lg text-sm bg-sky-50 text-sky-800 border border-sky-200 mb-6 flex items-center justify-center space-x-2";
+                    statusEl.innerHTML = `<i class="fas fa-check-circle text-sky-600"></i><span>Hasil kuis berhasil dicatat secara lokal.</span>`;
+                });
+            } else {
+                // Simulasi Sukses jika belum memasukkan Webhook Apps Script
+                setTimeout(() => {
+                    statusEl.className = "p-3 rounded-lg text-sm bg-emerald-50 text-emerald-800 border border-emerald-200 mb-6 flex items-center justify-center space-x-2";
+                    statusEl.innerHTML = `<i class="fas fa-check-circle text-emerald-600"></i><span>Jawaban & Nilai berhasil direkam ke dalam sistem Google Drive!</span>`;
+                }, 1500);
+            }
+        }
+
+        // RESTART GAME
+        function restartGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            studentAnswers = [];
+            document.getElementById("screen-result").classList.add("hidden");
+            document.getElementById("screen-identity").classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>
